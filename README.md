@@ -1,5 +1,5 @@
 # AdvancedCloner
-A modified version of ThorntonStuart's EE3 'SimpleCloner'. Without the simple.
+A modified version of ThorntonStuart's EE3 'SimpleCloner'.
 
 Clone entries in EE3. Simply.
 
