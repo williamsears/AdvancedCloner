@@ -272,7 +272,7 @@ class Simple_cloner_ext {
 			//Transcribe Support for assigning clone as a 'translation'
 
 
-			if ($carrydata['simple_cloner__clone_entry_translated'] !== 0){
+			if ($carrydata['simple_cloner__clone_entry_translated'] !== "0"){
 				$hash = '';
 				$getHash = ee()->db->select('*')->from('transcribe_entries_languages')->where(array(
 					'entry_id' => $data['entry_id']
@@ -306,6 +306,13 @@ class Simple_cloner_ext {
 						));
 					}
 				}
+			} else {
+				ee()->db->insert('transcribe_entries_languages', array(
+					'id' => 0,
+					'language_id' => 1,
+					'entry_id' => $query_result,
+					'relationship_id' => $query_result
+				));
 			}
 
 
@@ -333,6 +340,7 @@ class Simple_cloner_ext {
 				foreach($all_assets as $kee => $vals){
 					$prop = get_object_vars($vals);
 					$prop['entry_id'] = $query_result;
+					$prop['id'] = 0;
 					ee()->db->insert('assets_selections', $prop);
 
 				}
@@ -385,6 +393,7 @@ class Simple_cloner_ext {
 									foreach($all_assets as $kee => $vals){
 										$prop = get_object_vars($vals);
 										$prop['entry_id'] = $query_result;
+										$prop['id'] = 0;
 										$prop['row_id'] = $new_row_id;
 										ee()->db->insert('assets_selections', $prop);
 
@@ -431,23 +440,7 @@ class Simple_cloner_ext {
 				}
 			}
 
-			foreach($data as $key => $value) {
-				if(strpos($key, 'field_id') !== FALSE)
-				{
-					// Get field ID number to query exp_channel_fields table.
-					$field_id = explode('field_id_', $key);
-					$field_id = $field_id[1];
 
-					$grid_fields = ee()->db->query("SELECT field_id, field_name FROM exp_channel_fields WHERE field_id = " . $field_id . " AND field_type = 'bloqs'");
-
-					if($grid_fields->num_rows != 0)
-					{
-						$grid_fields = $grid_fields->result();
-
-						foreach($grid_fields as $k => $v) {
-							$arrayValue = get_object_vars($v);
-
-							$grid_id = $arrayValue['field_id'];
 							$grid_data = ee()->db->query("SELECT * FROM exp_blocks_block WHERE entry_id = ". $data['entry_id']);
 
 							$grid = $grid_data->result();
@@ -476,6 +469,7 @@ class Simple_cloner_ext {
 									foreach($all_assets as $kee => $vals){
 										$prop = get_object_vars($vals);
 										$prop['entry_id'] = $query_result;
+										$prop['id'] = 0;
 										$prop['row_id'] = $latest_id;
 										ee()->db->insert('assets_selections', $prop);
 
@@ -492,11 +486,7 @@ class Simple_cloner_ext {
 									));
 								}
 							}
-						}
 
-					}
-				}
-			}
 
 
 			ee()->db->update(
